@@ -1,0 +1,240 @@
+= Professionelle Softwareentwicklung: Übung 3
+:icons: font
+:icon-set: fa
+:source-highlighter: rouge
+:experimental:
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+[quote, Jens und Christian, ProPra Klausur 2019]
+In einem Gradle-Projekt mit einer Standard-Konfiguration liegt eine Java-Datei unter dem Pfad `src/main/java/main/App.java`. Wie lautet die erste Zeile der Java-Datei, die vom Java-Compiler beachtet wird?
+
+== Gradle
+
+In dieser Woche wollen wir den Aufbau eines Gradle-Projekts besser verstehen.
+Gradle wird im Detail in `woche3` beschrieben. Dort haben wir auch Videos und
+weitere Materialien verlinkt.
+
+In diesem und dem kommenden Semester werden Sie von uns quasi nur
+Gradle-Projekte erhalten. Gradle grundlegend zu verstehen ist daher sehr
+wichtig.
+
+=== Aufbau eines Gradle-Projekts
+
+NOTE: Wir arbeiten heute im Wurzelverzeichnis des Projekts, also direkt hier wo auch die README.adoc liegt.
+
+IMPORTANT: Erstellen Sie jedes Mal, wenn Sie Code hinzufügen, einen Commit und pushen Sie diesen auf GitHub. (`git add`, `git commit`, `git push`)
+
+Die erste Datei, die wir uns anschauen ist die `build.gradle`-Datei. Diese liegt in diesem Verzeichnis noch nicht vor und wird von uns erstellt.
+
+. Prüfen Sie zunächst Ihre Gradle Installation. Was ist die Ausgabe von `gradle --version`?
+. Erstellen Sie in einem einfachen Texteditor (vim, nano, VSCodium, Geany, ...) eine `build.gradle`-Datei und schreiben Sie folgende Zeilen hinein:
++
+[source,groovy]
+----
+plugins {
+
+}
+----
+. Führen Sie nun erneut `gradle tasks` aus. Welche Tasks stehen Ihnen nun zur Verfügung?
+. Fügen Sie die Zeile `id "java"` in `plugins` in der Datei `build.gradle` hinzu. Die Datei müsste nun so aussehen:
++
+[source,groovy]
+----
+plugins {
+    id "java"
+}
+----
+. Welche Tasks stehen Ihnen nun zur Verfügung? Was hat sich geändert?
+
+Wir haben nun den Grundstein gelegt für ein Gradle Projekt, welches Java Code
+versteht. Damit die IDE besser funktioniert, erstellen wir nun noch den Gradle
+Wrapper manuell.
+
+[start=6]
+. Schauen Sie in `gradle tasks` nach, wie man den Gradle Wrapper erstellen kann.
+
+Ihr Projekt sollte nun ungefähr so aussehen:
+[source,bash]
+----
+.
+├── build.gradle
+├── gradle
+│   └── wrapper
+│       ├── gradle-wrapper.jar
+│       └── gradle-wrapper.properties
+├── gradlew
+└── gradlew.bat
+----
+
+[start=7]
+. Öffnen Sie den Code nun in Ihrer IDE und konfigurieren Sie das Projekt.
+
+TIP: Meistens klappt es ganz gut bei IntelliJ direkt die `build.gradle` mit
+`Open` zu öffnen und dann zu wählen, dass man das ganze Projekt in IntelliJ
+öffnen möchte. Auf der Konsole wäre das ungefähr dieser Befehl: `idea
+build.gradle`. Über die GUI bitte die Funktion `open` verwenden.
+
+[start=8]
+. Erstellen Sie die Verzeichnisse 'src/main/java/de/propra' und erstellen Sie in diesem Verzeichnis die Datei `Muh.java`.
+. Definieren Sie die Klasse `Muh` im korrekten Package. Fügen Sie eine main-Methode hinzu und geben Sie auf der Konsole den String `Muh!` aus.
+
+Wir wollen nun erreichen, dass unsere Klasse `Muh` mit dem `run`-Befehl aus der Konsole ausgeführt werden kann. Dafür benötigen wir das `application`-Plugin.
+
+NOTE: Das https://docs.gradle.org/current/userguide/application_plugin.html[Application-Plugin] verwenden wir hier, damit wir eine einzelne Klasse direkt auf der Konsole ausführen können. Im späteren Verlauf des Semesters werden Sie dieses Plugin immer seltener sehen.
+
+[start=10]
+. Fügen Sie nun analog zum `java`-Plugin von oben noch das `application`-Plugin in die `build.gradle`-Datei ein.
+. Welche Gradle-Tasks sind nun hinzugekommen?
+. Wir wollen nun erreichen, dass unsere Main-Methode ausgeführt wird, wenn wir `./gradlew run` in die Konsole eingeben. Dafür müssen wir das Application-Plugin so konfigurieren, dass es auf unsere `Muh`-Klasse zeigt und dort die Main-Methode ausführt. Fügen Sie die folgenden Zeilen in Ihre build.gradle-Datei ein:
++
+[source,groovy]
+----
+application {
+    mainClass = "de.propra.Muh"
+}
+----
+. Führen Sie `./gradlew run` aus. Sie sollten nun sehen, wie der Task `:run` ausgeführt wird und `Muh!` auf der Konsole ausgegeben wird.
+
+Gut, unser Projekt läuft, funktioniert in der IDE und auch auf der Konsole.
+Lassen wir unser `Muh!` noch etwas spannender aussehen, indem wir die Bibliothek
+`cowsay` einfügen, die unseren String für die Konsole aufbereitet. Um eine
+Bibliothek herunterzuladen, müssen wir zunächst Gradle sagen von wo es die
+Artefakte herunterladen kann. Danach geben wir die neue Dependency mit hinzu.
+
+[start=13]
+. Wir beziehen unsere Artefakte heute von Maven Central. Fügen Sie dazu die folgenden Zeilen in Ihre build.gradle-Datei:
++
+[source,groovy]
+----
+repositories {
+    mavenCentral()
+}
+----
+. Suchen Sie nun auf https://search.maven.org/[Maven Central] nach der aktuellsten Version des Pakets https://github.com/ricksbrown/cowsay[com.github.ricksbrown:cowsay]. (Tip: Sie können auch direkt aus IntelliJ heraus die neueste Version ermitteln) (2. Tip: Es gibt eine Menge cowsay Libraries auf Maven Central. Ich habe mich für die von ricksbrown entschieden. Wählen Sie bitte diese Library aus.)
+. Wenn Sie die aktuellste Version gefunden haben, kopieren Sie nun den String aus "Gradle Groovy DSL" und fügen Sie ihn nun in unsere build.gradle-Datei ein:
++
+[source,groovy]
+----
+dependencies {
+    <ihr kopierter String>
+}
+----
+
+Wir haben nun eine Dependency zum Projekt hinzugefügt und Gradle angewiesen
+diese von Maven Central herunterzuladen. Eventuell müssen Sie das Ihrer IDE noch
+mitteilen, dass sich die Gradle-Dependencies geändert haben. Das können Sie mit
+der Tastenkombination `SHIFT SHIFT` (also zweimal schnell die Shift-Taste
+drücken) und der Anweisung "Reload All Gradle Projects" erreichen. Sie sollten
+am unteren Bildschirmrand nun sehen, wie Gradle die Dependency herunterlädt und
+indexiert.
+
+Nun wollen wir diese Bibliothek verwenden.
+
+[start=16]
+. Gehen Sie in die Klasse `Muh`, löschen Sie den Inhalt der Main-Methode und fügen Sie stattdessen diese Zeilen ein:
++
+[source,java]
+----
+String[] muh = new String[]{"Muh!"};
+System.out.println(Cowsay.say(muh));
+----
+. Den korrekten Import der Klasse `Cowsay` übernimmt Ihre IDE, sofern die Dependency korrekt von Ihrer IDE heruntergeladen und indexiert wurde. Die meisten Imports erledigt unsere IDE automatisch (bzw. weist uns darauf hin, dass es etwas zu importieren gibt) und wir haben damit nur wenige zu tun. Importieren Sie die korrekte `Cowsay` Klasse mithilfe Ihrer IDE.
+. Führen Sie Ihr Gradle Projekt aus, beispielsweise über die IDE oder mit `./gradlew run`. Sie sollten nun eine Kuh sehen, die "Muh!" sagt.
+
+🥳 Wir haben nun alles gesehen, was wir zur Erzeugung eines Gradle-Projektes
+benötigen, wie wir Dependencies importieren und Bibliotheken verwenden können 🔥
+
+=== Arbeiten mit Bibliotheken
+
+Es gibt noch andere Parameter, die man an die Bibliothek geben kann.
+Beispielsweise könnten wir auch folgende Ausgabe erzeugen und den Drachen Smaug
+reden lassen:
+
+[source, bash]
+====
+ __________________________________________
+/ Meine Rüstung ist ein zehnfacher Schild, \
+| meine Zähne sind Schwerter, meine Klauen |
+| Speere, das Aufschlagen meines Schwanzes |
+| ist ein Donnerkeil, meine Schwingen sind |
+| Wirbelstürme, und mein Atem bringt den   |
+\ Tod! - Smaug zu Bilbo                    /
+ ------------------------------------------
+      \                    / \  //\
+       \    |\___/|      /   \//  \\
+            /0  0  \__  /    //  | \ \    
+           /     /  \/_/    //   |  \  \  
+           @_^_@'/   \/_   //    |   \   \ 
+           //_^_/     \/_ //     |    \    \
+        ( //) |        \///      |     \     \
+      ( / /) _|_ /   )  //       |      \     _\
+    ( // /) '/,_ _ _/  ( ; -.    |    _ _\.-~        .-~~~^-.
+  (( / / )) ,-{        _      `-.|.-~-.           .~         `.
+ (( // / ))  '/\      /                 ~-. _ .-~      .-~^-.  \
+ (( /// ))      `.   {            }                   /      \  \
+  (( / ))     .----~-.\        \-'                 .~         \  `. \^-.
+             ///.----..>        \             _ -~             `.  ^-`  ^-_
+               ///-._ _ _ _ _ _ _}^ - - - - ~                     ~-- ,.-~
+                                                                  /.-~
+====
+
+Die weitere Dokumentation zu dieser Bibliothek können Sie der
+https://github.com/ricksbrown/cowsay[Projektseite] entnehmen.
+
+Generell sind Bibliotheken sehr nützlich und Ihre Projekte werden eine Vielzahl
+von Dependencies dieser Art beinhalten. Der Umgang damit und zu verstehen, wie
+man sie dann im Code verwenden kann, sind sehr wichtig für Sie als
+Softwareentwickler:innen.
+
+Spielen Sie ein wenig mit der Bibliothek herum wenn Sie wollen.
+
+== Gradle-Plugins
+
+Es gibt noch viele weitere Möglichkeiten Gradle zu erweitern. Dadurch stehen uns
+weitere Tasks und Funktionen zur Verfügung. Sehr beliebt sind Plugins zur
+Überprüfung der Code Qualität. Unsere IDE kann das prinzipiell auch, aber es ist
+nicht verkehrt den eigenen Code auch per Konsole (und damit IDE-unabhängig)
+prüfen zu können.
+
+. Fügen Sie das Plugin `id "com.github.spotbugs" version "4.7.1"` zu Ihrer `build.gradle`-Datei hinzu. Welche
+Tasks stehen Ihnen nun zur Verfügung?
+. Fügen Sie die folgenden Zeilen in die `build.gradle`-Datei ein:
++
+[source,groovy]
+----
+spotbugsMain {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+----
++
+Dadurch wird ein HTML Bericht über Ihr Projekt erzeugt, wo sie etwaige Fehler im Code nachschauen können.
+. Führen Sie `./gradlew check` aus, um Ihr Projekt zu bauen, testen und zu analysieren. Sie erhalten einen Bericht im Ordner `build/reports/spotbugs/main.html`, welche Sie in Ihrem Browser öffnen können.
+. Schauen Sie sich den Bericht im Browser an.
+
+Es gibt noch viele weitere Plugins, die Sie für Gradle verwenden können. Später werden wir sicherlich mal noch `checkstyle` und vielleicht `pmd` anschauen. Stöbern Sie ein wenig und finden Sie Plugins, die vielleicht hilfreich sein könnten.
+
+== Tool der Woche: wttr.in
+
+Die Webanwendung wttr.in bietet eine einfache Möglichkeit die Temperatur für
+bestimmte Orte anzeigen zu lassen. Die Einfachheit dieser Anwendung ist guter
+Grund dafür sie nutzen zu wollen.
+
+Beispielaufrufe sieht so aus: `curl http://wttr.in/düsseldorf` (klappt auch im
+Browser) und liefert nette Ergebnisse.
+
+Es gibt auch eine Hand voll von Standardformatierungen, die verwendet werden
+können: 
+
+   λ curl http://wttr.in/düsseldorf?format=3
+   düsseldorf: ⛅️ +16°C
+
+Die Hilfe finden Sie hier: http://wttr.in/:help
